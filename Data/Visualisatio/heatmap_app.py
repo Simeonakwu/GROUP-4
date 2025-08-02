@@ -9,7 +9,7 @@ from streamlit_folium import st_folium
 # -------------------------
 @st.cache_data
 def load_crime_data():
-    df = pd.read_excel("bristol_crime_sorted.xlsx")
+    df = pd.read_excel("Data/Visualisatio/bristol_crime_sorted.xlsx")
     df = df.rename(columns={'date ': 'month'})
     df['month'] = pd.to_datetime(df['month'], format='%Y-%m')
     df['year'] = df['month'].dt.year
@@ -23,6 +23,13 @@ def load_crime_data():
 
     df['season'] = df['month_num'].apply(get_season)
     return df.dropna(subset=['lat', 'lng'])
+
+@st.cache_data
+def get_heat_data(df, max_points=10000):
+    if len(df) > max_points:
+        return df.sample(max_points)[['lat', 'lng']].values.tolist()
+    else:
+        return df[['lat', 'lng']].values.tolist()
 
 crime_df = load_crime_data()
 
@@ -58,12 +65,7 @@ if selected_crime != 'All':
 st.title("🔴 Bristol Crime Heatmap")
 st.markdown(f"**Crimes Displayed**: {len(filtered_df)}")
 
-# Limit to 10,000 rows for performance
-max_points = 10000
-if len(filtered_df) > max_points:
-    heat_data = filtered_df.sample(max_points)[['lat', 'lng']].values.tolist()
-else:
-    heat_data = filtered_df[['lat', 'lng']].values.tolist()
+heat_data = get_heat_data(filtered_df)
 
 # -------------------------
 # Create and show map
