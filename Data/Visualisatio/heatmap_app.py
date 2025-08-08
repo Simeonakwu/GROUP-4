@@ -9,7 +9,7 @@ from streamlit_folium import st_folium
 # -------------------------
 @st.cache_data
 def load_crime_data():
-    df = pd.read_excel("Data/Visualisatio/bristol_crime_with_socioeconomic_data.xlsx")
+    df = pd.read_excel("bristol_crime_with_socioeconomic_data.xlsx")
     df.columns = df.columns.str.strip()
 
     # Rename if needed
